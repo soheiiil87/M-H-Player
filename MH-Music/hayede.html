@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Hayede Player</title>
+  <style>
+    body {
+      background-color: #2e2e2e;
+      color: #ff055c;
+      font-family: 'Segoe UI', sans-serif;
+      text-align: center;
+      padding-bottom: 120px;
+    }
+    header {
+  background-color: #222;
+  border-bottom: 2px solid #ff055c;
+  padding: 15px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 200;
+}
+
+header .logo a{
+  color: #ff055c;
+  font-size: 24px;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+header nav a {
+  color: #ff055c;
+  text-decoration: none;
+  margin-left: 20px;
+  font-weight: bold;
+}
+
+header nav a:hover {
+  color: #9537ff;
+}
+
+    h1 {
+      margin-top: 40px;
+      color: #ff055c;
+    }
+    #trackList {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      margin: 30px auto 100px;
+      max-width: 1000px;
+    }
+    .card {
+      background-color: #3a3a3a;
+      border: 2px solid #ff055c;
+      border-radius: 10px;
+      width: 220px;
+      padding: 15px;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+    .card:hover {
+      transform: scale(1.05);
+      background-color: #ff055c;
+      color: #2e2e2e;
+    }
+    .card img {
+      width: 100%;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+    #player {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background-color: #222;
+      padding: 20px;
+      border-top: 2px solid #ff055c;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+      z-index: 100;
+    }
+    #player audio {
+      width: 300px;
+    }
+    button {
+      background-color: #ff055c;
+      color: #2e2e2e;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #ff055a;
+    }
+  </style>
+</head>
+<body>
+  
+  <header>
+  <div class="logo"><a>Hayede Player</a></div>
+  <nav>
+    <a href="About.html">About</a>
+    <a href="Sign.html">Sign</a>
+  </nav>
+  </header>
+
+  <a href="./index.html" 
+   style="position: absolute; top: 100px; left: 10px; 
+          background-color: #ff055c; color: #2e2e2e; 
+          padding: 5px 10px; border-radius: 5px; 
+          text-decoration: none; font-size: small;">
+  ⬅ Back
+    </a>
+
+  <div id="trackList"></div>
+
+  <div id="player">
+    <button onclick="playPrev()">⏮</button>
+    <audio id="audio" controls style="min-width: 800px;"></audio>
+    <button onclick="playNext()">⏭</button>
+  </div>
+
+
+  <script>
+    const tracks = [
+
+      { 
+        title: 'Siyah Cheshmoon (Remix)', 
+        url: 'https://dl.behtamusic.ir/music/1402/12/Hayedeh-Siah-Cheshmoon-remix.mp3', 
+        img: 'https://berooztarinha.com/wp-content/uploads/2528.jpg' 
+      },
+
+      { 
+        title: 'Siyah Cheshmoon', 
+        url: 'https://musictaj.musitraf.com/song402/se/Hayedeh%20-%20Siyah%20Cheshmoon.mp3', 
+        img: 'https://berooztarinha.com/wp-content/uploads/2528.jpg' 
+      },
+
+      { 
+        title: 'Saghi',
+        url: 'https://dl.parsmusics.ir/1402/04/01/hayedeh%20-%20Saghi.mp3',
+        img: 'https://tse3.mm.bing.net/th/id/OIP.i8a93SQeaXWnBeDqN2WKvQHaHa?rs=1&pid=ImgDetMain&o=7&rm=3' 
+      },
+
+      { 
+        title: 'Shane Hayat', 
+        url: 'https://dl.taraneha.net/1402/11/30/Hayedeh - Shanehayat (128).mp3', 
+        img: 'https://dl.musicdrum.ir/uploads/2023/07/Hayedeh-Shanehayat.jpg' 
+      },
+
+      { 
+        title: 'Vay Be Halesh',
+        url: 'https://dl.asamusic.ir/snap-song/music/1403/11/26/Hayedeh%20-%20Vay%20Be%20Halesh%20%28128%29.mp3',
+        img: 'https://tse4.mm.bing.net/th/id/OIP.r8owQczCng1mzqempjqyeAHaHa?rs=1&pid=ImgDetMain&o=7&rm=3' 
+      },
+
+      { 
+        title: 'Zendegi', 
+        url: 'https://xx.sahand-music.ir/Archive/h/hayedeh/Hayedeh%20-%20Shanehayat%20Ra%20Baraye%20Geryeh%20Kardan/03%20Zendegi.mp3', 
+        img: 'https://tse2.mm.bing.net/th/id/OIP.aRDIMFkePlTDeAdrncnOcAHaHa?rs=1&pid=ImgDetMain&o=7&rm=3' 
+      },
+
+
+
+    ];
+    let currentTrack = 0;
+
+    function renderTrackList() {
+      const listDiv = document.getElementById('trackList');
+      listDiv.innerHTML = '';
+      tracks.forEach((track, index) => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+          <img src="${track.img}" alt="${track.title}">
+          <h3>${track.title}</h3>
+        `;
+        card.onclick = () => {
+          currentTrack = index;
+          playTrack(currentTrack);
+        };
+        listDiv.appendChild(card);
+      });
+    }
+
+    function playTrack(index) {
+      const audio = document.getElementById('audio');
+      audio.src = tracks[index].url;
+      audio.play();
+    }
+
+    function playNext() {
+      currentTrack = (currentTrack + 1) % tracks.length;
+      playTrack(currentTrack);
+    }
+
+    function playPrev() {
+      currentTrack = (currentTrack - 1 + tracks.length) % tracks.length;
+      playTrack(currentTrack);
+    }
+
+    renderTrackList();
+    playTrack(currentTrack);
+    document.getElementById('audio').addEventListener('ended', playNext);
+  </script>
+</body>
+</html>
